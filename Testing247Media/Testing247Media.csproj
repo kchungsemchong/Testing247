@@ -171,6 +171,7 @@
     <Content Include="Content\Site.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="GoogleMapDevTest.aspx" />
+    <Content Include="GoogleMapDevTest1.aspx" />
     <Content Include="packages.config" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
@@ -368,6 +369,13 @@
     </Compile>
     <Compile Include="GoogleMapDevTest.aspx.designer.cs">
       <DependentUpon>GoogleMapDevTest.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="GoogleMapDevTest1.aspx.cs">
+      <DependentUpon>GoogleMapDevTest1.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="GoogleMapDevTest1.aspx.designer.cs">
+      <DependentUpon>GoogleMapDevTest1.aspx</DependentUpon>
     </Compile>
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
