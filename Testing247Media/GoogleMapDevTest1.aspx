@@ -4,92 +4,114 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-	<title></title>
-	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDn5scaDriph6nXqc_SQKSh_WgstWO-aGk"></script>
-	<script type="text/javascript">
+    <title></title>
+    <style type="text/css">
+        .hiddencol {
+            display: none;
+        }
+    </style>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDn5scaDriph6nXqc_SQKSh_WgstWO-aGk"></script>
+    <script type="text/javascript">
+        var markers = [];
+        var locations;
+        var jsonLocations = JSON.stringify(locations);
+        function initialize(locations) {
+            geocoder = new google.maps.Geocoder();
+            if (typeof locations === "undefined") {
+                var latlng = new google.maps.LatLng(55.378051, -3.43597299999999);
+                var mapOptions = {
+                    zoom: 4,
+                    center: latlng
+                }
+                map = new google.maps.Map(document.getElementById('map'), mapOptions);
+                return;
+            }
+            if (locations.length > 0) {
+                var latlng = new google.maps.LatLng(locations[0].Latitude, locations[0].Longtitude);
+                var mapOptions = {
+                    zoom: 4,
+                    center: latlng
+                }
+            }
+            map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-		var locations = [
-		['Stadtbibliothek Zanklhof', 47.06976, 15.43154, 1],
-		['Stadtbibliothek dieMediathek', 47.06975, 15.43116, 2],
-		['Stadtbibliothek Gösting', 47.09399, 15.40548, 3],
-		['Stadtbibliothek Graz West', 47.06993, 15.40727, 4],
-		['Stadtbibliothek Graz Ost', 47.06934, 15.45888, 5],
-		['Stadtbibliothek Graz Süd', 47.04572, 15.43234, 6],
-		['Stadtbibliothek Graz Nord', 47.08350, 15.43212, 7],
-		['Stadtbibliothek Andritz', 47.10280, 15.42137, 8]
-		];
+            var marker, i, j, k;
+            var bounds = new google.maps.LatLngBounds();
+            for (i = 0; i < locations.length; i++) {
+                marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(locations[i].Latitude, locations[i].Longtitude),
+                    map: map,
+                    draggable: true,
+                    title: String(locations[i].Name)
+                });
+                markers.push(marker);
+                bounds.extend(markers[i].getPosition());
+                latitude = locations[i].Latitude;
+                longtitude = locations[i].Longtitude;
+                map.fitBounds(bounds);
+                document.getElementById('<%= txtLocations.ClientID%>').value = jsonLocations;
+            }
 
-		//Using Address
-		var geocoder;
-		var map;
-		//var searchResult = $('.txtSearch').val();
-		function initialize() {
-			geocoder = new google.maps.Geocoder();
-			var latlng = new google.maps.LatLng(47.071876, 15.441456);
-			var mapOptions = {
-				zoom: 8,
-				center: latlng
-			}
-			map = new google.maps.Map(document.getElementById('map'), mapOptions);
+            if (markers.length > 0) {
+                for (j = 0; j < markers.length; j++) {
+                    google.maps.event.addListener(markers[j], 'dragend', function () {
+                        for (k = 0; k < markers.length; k++) {
+                            console.log(markers[k].getPosition().lat());
+                            console.log(markers[k].getPosition().lng());
+                            console.log(markers[k].title);
+                            latitude = markers[k].getPosition().lat();
+                            longtitude = markers[k].getPosition().lng();
+                            locations[k].Latitude = latitude;
+                            locations[k].Longtitude = longtitude;
+                            var jsonLocations = JSON.stringify(locations);
+                            document.getElementById('<%= txtLocations.ClientID%>').value = jsonLocations;
+                        }
+                    });
+                }
 
-			var marker, i, j, k;
-			var markers = [];
+                function returnLocations(jsonLocations) {
+                    PageMethods.ReturnLocations(jsonLocations);
+                }
 
-			for (i = 0; i < locations.length; i++) {
-				marker = new google.maps.Marker({
-					position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-					map: map,
-					draggable: true,
-					title: String(locations[i][0])
-				});
-				marker.set("id", i);
-				markers.push(marker);
-			}
+                latlng = new google.maps.LatLng(latitude, longtitude);
+                mapOptions = {
+                    zoom: 8,
+                    center: latlng
+                }
+		  }
 
-			for (j = 0; j < markers.length; j++) {
-				google.maps.event.addListener(markers[j], 'dragend', function () {
-					for (k = 0; k < markers.length; k++) {
-						console.log(markers[k].getPosition().lat());
-						console.log(markers[k].getPosition().lng());
-						console.log(markers[k].title);
-					}
-				});
-			}
 
-			//var marker1, marker2;
-
-			//marker1 = new google.maps.Marker({
-			//	position: new google.maps.LatLng(locations[0][1], locations[0][2]),
-			//	map: map,
-			//	draggable: true,
-			//	title: 'locations[0][0]'
-			//});
-
-			//marker2 = new google.maps.Marker({
-			//	position: new google.maps.LatLng(locations[1][1], locations[1][2]),
-			//	map: map,
-			//	draggable: true,
-			//	title: 'locations[1][0]'
-			//});
-
-			//google.maps.event.addListener(marker1, 'dragend', function () {
-			//	console.log(marker1.getPosition().lat());
-			//	console.log(marker1.getPosition().lng());
-			//});
-
-			//google.maps.event.addListener(marker2, 'dragend', function () {
-			//	console.log(marker2.getPosition().lat());
-			//	console.log(marker2.getPosition().lng());
-			//});
-		}
-
-	</script>
+	   }
+    </script>
 </head>
-<body onload="initialize()">
-	<form id="form1" runat="server">
-		<div>
-		</div>
-		<div id="map" style="width: 600px; height: 400px; float: right;">
-	</form>
+<%--<body onload="initialize()">--%>
+<body>
+    <form id="form1" runat="server">
+	   <div>
+		  <asp:ScriptManager ID="scGoogleMap" runat="server" EnablePageMethods="true" />
+	   </div>
+	   <asp:Button ID="btnGeoLocation" runat="server" Text="Add Location" OnClick="btnGeoLocation_Click" />
+	   <div id="map" style="width: 600px; height: 400px; float: left;"></div>
+	   <div>
+		  <asp:TextBox ID="txtLocations" runat="server" AutoPostBack="true" />
+		  <br />
+		  <asp:Button ID="btnSave" runat="server" Text="Save" OnClick="btnSave_Click" />
+		  <asp:TextBox ID="txtGeoLocation" runat="server" />
+		  <br />
+
+		  <asp:GridView ID="gvGeoLocation" runat="server" AutoGenerateColumns="false"
+			 OnRowDeleting="gvGeoLocation_RowDeleting" AutoGenerateDeleteButton="false">
+			 <Columns>
+				<asp:BoundField DataField="Name" HeaderText="Location"></asp:BoundField>
+				<asp:BoundField DataField="Latitude" HeaderText="Latitude" ItemStyle-CssClass="hiddencol"
+				    HeaderStyle-CssClass="hiddencol"></asp:BoundField>
+				<asp:BoundField DataField="Longtitude" HeaderText="Longtitude" ItemStyle-CssClass="hiddencol"
+				    HeaderStyle-CssClass="hiddencol"></asp:BoundField>
+				<asp:CommandField DeleteText="Delete" ShowDeleteButton="true" />
+			 </Columns>
+		  </asp:GridView>
+	   </div>
+
+    </form>
 </body>
 </html>
