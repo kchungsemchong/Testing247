@@ -33,6 +33,52 @@ namespace Testing247Media
 		  }
 	   }
 
+	   protected bool IsMarkerTooClose
+	   {
+		  get
+		  {
+			 if (this.ViewState["MarkerTooClose"] == null)
+			 {
+				this.ViewState["MarkerTooClose"] = false;
+			 }
+			 return (bool)this.ViewState["MarkerTooClose"];
+		  }
+		  set
+		  {
+			 this.ViewState["MarkerTooClose"] = value;
+		  }
+	   }
+
+	   protected bool IsMarkerValid
+	   {
+		  get
+		  {
+			 if (this.ViewState["MarkerValid"] == null)
+			 {
+				this.ViewState["MarkerValid"] = false;
+			 }
+			 return (bool)this.ViewState["MarkerValid"];
+		  }
+		  set
+		  {
+			 this.ViewState["MarkerValid"] = value;
+		  }
+	   }
+	   public string ErrorMessage
+	   {
+		  get
+		  {
+			 if (this.ViewState["ErrorMessage"] == null)
+			 {
+				this.ViewState["ErrorMessage"] = "NoError";
+			 }
+			 return (string)this.ViewState["ErrorMessage"];
+		  }
+		  set
+		  {
+			 this.ViewState["ErrorMessage"] = value;
+		  }
+	   }
 	   protected void Page_Load(object sender, EventArgs e)
 	   {
 		  int advertId = 1;
@@ -75,14 +121,17 @@ namespace Testing247Media
 		  List<Marker> markers = new List<Marker>();
 		  foreach (DataRow row in this.dtGeoLocation.Rows)
 		  {
+			 int zoomLevel = 1;
 			 float latitude = 0;
-			 float longtitude = 0;
+			 float longitude = 0;
 			 bool isLatitudeValid = float.TryParse(row["Latitude"].ToString(), out latitude);
-			 bool isLongtitudeValid = float.TryParse(row["Longtitude"].ToString(), out longtitude);
+			 bool isLongtitudeValid = float.TryParse(row["Longitude"].ToString(), out longitude);
+			 bool isZoomLevelValid = int.TryParse(row["ZoomLevel"].ToString(), out zoomLevel);
 			 Marker marker = new Marker();
 			 marker.Name = row["Name"].ToString();
 			 marker.Latitude = latitude;
-			 marker.Longtitude = longtitude;
+			 marker.Longitude = longitude;
+			 marker.ZoomLevel = zoomLevel;
 			 markers.Add(marker);
 		  }
 
@@ -97,10 +146,20 @@ namespace Testing247Media
 		  return result;
 	   }
 
+	   private string ConvertToJson(string errorMessage)
+	   {
+		  JavaScriptSerializer serializer = new JavaScriptSerializer();
+		  string result = serializer.Serialize(errorMessage);
+
+		  return result;
+	   }
+
 	   public void InitializeMap()
 	   {
 		  string jsonMarkers = string.Empty;
-		  string initializeMethod = string.Format("initialize({0})", jsonMarkers);
+		  string errorMessage = this.ErrorMessage;
+		  errorMessage = ConvertToJson(errorMessage);
+		  string initializeMethod = string.Format("initialize({0},{1})", jsonMarkers, errorMessage);
 		  if (!(dtGeoLocation.Rows.Count > 0))
 		  {
 			 Page.ClientScript.RegisterStartupScript(this.GetType(), "InitializeGeoLocation", initializeMethod, true);
@@ -109,7 +168,7 @@ namespace Testing247Media
 		  List<Marker> markers = new List<Marker>();
 		  markers = ConvertToMarker();
 		  jsonMarkers = ConvertToJson(markers);
-		  initializeMethod = string.Format("initialize({0})", jsonMarkers);
+		  initializeMethod = string.Format("initialize({0},{1})", jsonMarkers, errorMessage);
 		  Page.ClientScript.RegisterStartupScript(this.GetType(), "InitializeGeoLocation", initializeMethod, true);
 	   }
 	   private void AddNewMarkerToDataTable(Marker marker, string location)
@@ -119,30 +178,64 @@ namespace Testing247Media
 		  row["GeoLocationId"] = 3;
 		  row["Name"] = location;
 		  row["Latitude"] = marker.Latitude;
-		  row["Longtitude"] = marker.Longtitude;
+		  row["Longitude"] = marker.Longitude;
+		  row["ZoomLevel"] = marker.ZoomLevel;
 		  dtGeoLocation.Rows.Add(row);
 	   }
 	   private void AssignMarkerToNewLocation(string location)
 	   {
+		  this.ErrorMessage = "NoError";
 		  bool isOnlyInUk = false;
+		  this.IsMarkerTooClose = false;
+		  this.IsMarkerValid = true;
+		  double invalidLatitude = 0.0;
+		  double invalidLongitude = 0.0;
 		  Marker marker = new Marker();
 		  marker = marker.RetrieveCoordinates(location, isOnlyInUk);
+		  if (marker.Latitude.Equals(invalidLatitude))
+		  {
+			 if (marker.Longitude.Equals(invalidLongitude))
+			 {
+				this.IsMarkerValid = false;
+				this.ErrorMessage = " You entered an invalid location.";
+				return;
+			 }
+		  }
+		  EvaluateMarkerDuplication(marker);
+		  if (this.IsMarkerTooClose)
+			 return;
 		  AddNewMarkerToDataTable(marker, location);
 	   }
-
+	   private void EvaluateMarkerDuplication(Marker marker)
+	   {
+		  double markerLat = 0;
+		  double markerLng = 0;
+		  markerLat = Math.Round(marker.Latitude, 4);
+		  markerLng = Math.Round(marker.Longitude, 4);
+		  foreach (DataRow row in dtGeoLocation.Rows)
+		  {
+			 double lat = Math.Round(Convert.ToDouble(row["Latitude"]), 4);
+			 double lng = Math.Round(Convert.ToDouble(row["Longitude"]), 4);
+			 if (lat.Equals(markerLat) && lng.Equals(markerLng))
+			 {
+				this.IsMarkerTooClose = true;
+				this.ErrorMessage = "Marker is too close to existing ones";
+				break;
+			 }
+		  }
+	   }
 	   protected void btnGeoLocation_Click(object sender, EventArgs e)
 	   {
 		  string location = txtGeoLocation.Text;
 		  if (!string.IsNullOrEmpty(location))
 		  {
 			 AssignMarkerToNewLocation(location);
+			 if (!this.IsMarkerValid)
+				return;
 			 BindGvGeolocation();
 			 InitializeMap();
-
 		  }
-
 	   }
-
 	   protected void gvGeoLocation_RowDeleting(object sender, GridViewDeleteEventArgs e)
 	   {
 		  int index = e.RowIndex;
@@ -155,7 +248,6 @@ namespace Testing247Media
 	   {
 		  InitializeMap();
 		  string locations = txtLocations.Text;
-
 	   }
     }
 }

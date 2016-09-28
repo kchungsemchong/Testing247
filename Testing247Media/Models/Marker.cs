@@ -12,9 +12,10 @@ namespace Testing247Media.Models
     {
 	   public int GeoLocationId { get; set; }
 	   public string Name { get; set; }
-	   public float Latitude { get; set; }
-	   public float Longtitude { get; set; }
+	   public double Latitude { get; set; }
+	   public double Longitude { get; set; }
 	   public int AdvertId { get; set; }
+	   public int ZoomLevel { get; set; }
 
 
 	   public Marker RetrieveCoordinates(string location, bool isOnlyInUk)
@@ -40,12 +41,12 @@ namespace Testing247Media.Models
 	   }
 	   private void AssignCoordinate(Marker coordinate, XElement locationElement)
 	   {
-		  float latitude = 0;
-		  float longtitude = 0;
-		  bool isLatitudeValid = float.TryParse(locationElement.Element("lat").Value.ToString(), out latitude);
-		  bool isLongtitudeValid = float.TryParse(locationElement.Element("lng").Value.ToString(), out longtitude);
+		  double latitude = 0;
+		  double longitude = 0;
+		  bool isLatitudeValid = double.TryParse(locationElement.Element("lat").Value.ToString(), out latitude);
+		  bool isLongtitudeValid = double.TryParse(locationElement.Element("lng").Value.ToString(), out longitude);
 		  coordinate.Latitude = latitude;
-		  coordinate.Longtitude = longtitude;
+		  coordinate.Longitude = longitude;
 	   }
 	   private WebResponse RetrieveCoordinatesFromLocation(string requestUri)
 	   {

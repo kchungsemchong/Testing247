@@ -20,14 +20,14 @@ namespace Testing247Media
 		  {
 			 Name = "Stadtbibliothek Zanklhof",
 			 Latitude = 47.06976f,
-			 Longtitude = 15.43154f
+			 Longitude = 15.43154f
 		  };
 		  markers.Add(marker1);
 		  Marker marker2 = new Marker
 		  {
 			 Name = "Stadtbibliothek dieMediathek",
 			 Latitude = 47.06975f,
-			 Longtitude = 15.43116f
+			 Longitude = 15.43116f
 		  };
 		  markers.Add(marker2);
 
