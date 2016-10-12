@@ -230,8 +230,6 @@ namespace Testing247Media
 		  if (!string.IsNullOrEmpty(location))
 		  {
 			 AssignMarkerToNewLocation(location);
-			 if (!this.IsMarkerValid)
-				return;
 			 BindGvGeolocation();
 			 InitializeMap();
 		  }

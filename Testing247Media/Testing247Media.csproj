@@ -178,6 +178,8 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Account\Web.config" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="ReturnCoordinatesToCodeBehind.aspx" />
+    <Content Include="ReturnCoords.aspx" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -380,6 +382,20 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Marker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReturnCoordinatesToCodeBehind.aspx.cs">
+      <DependentUpon>ReturnCoordinatesToCodeBehind.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReturnCoordinatesToCodeBehind.aspx.designer.cs">
+      <DependentUpon>ReturnCoordinatesToCodeBehind.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ReturnCoords.aspx.cs">
+      <DependentUpon>ReturnCoords.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReturnCoords.aspx.designer.cs">
+      <DependentUpon>ReturnCoords.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
