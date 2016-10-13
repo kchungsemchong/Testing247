@@ -36,22 +36,27 @@ namespace Testing247Media
             }
         }
         protected static DataTable dtGeoLoc { get; set; }
-        protected static string Message { get; set; }
+        protected static List<Test> Message { get; set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            RetrieveGeoLocations(1);
+            //RetrieveGeoLocations(1);
             //rptTest.DataSource = dtGeoLocation;
             //rptTest.DataBind();
         }
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public static string HelloWorld(string msg)
+        public static void HelloWorld(List<Test> name)
         {
-            string test = string.Empty;
-            //Message = msg;
-            return test;
+            var markers = name;
+            Message = markers;
+            //List<Test> test = new List<Test>();
+            //test = markers;
+
+            //JavaScriptSerializer deserializer = new JavaScriptSerializer();
+            //var results = deserializer.Deserialize<List<Test>>(postData);
+            //Message = results;
         }
 
         [WebMethod]
@@ -65,12 +70,9 @@ namespace Testing247Media
             returnCoords.RetrieveGeoLocations(1);
             markers = returnCoords.ConvertToMarker(dtGeoLoc);
             jsonMarkers = returnCoords.ConvertToJson(markers);
-            Message = msg;
+            //Message = msg;
             return jsonMarkers;
         }
-
-
-
 
         private void RetrieveGeoLocations(int advertId)
         {
@@ -123,16 +125,13 @@ namespace Testing247Media
 
         protected void btnTest_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         protected void btnGetGeoLocations_Click(object sender, EventArgs e)
         {
-            string test = Message;
-
-
+            List<Test> test = new List<Test>();
+            test = Message;
         }
-
-        
     }
 }

@@ -43,14 +43,17 @@
         //    });
         //});
 
-        var id = "f1a3sd4f64asf";
+
+        var postData = [
+              { foo: "john", bar: "smith" },
+              { foo: "ben", bar: "johnson" }
+        ];
         $(document).ready(function () {
             $("input[id$='btnGetGeoLocations']").mousedown(function () {
                 $.ajax({
                     type: "POST",
                     url: 'ReturnCoords.aspx/HelloWorld',
-                    data: JSON.stringify({ msg: 'MP3'}),
-                    //data: "{'foo':'foovalue'}",
+                    data: JSON.stringify({ name: postData }),
                     contentType: 'application/json',
                     dataType: 'json',
                     success: function (data) {
@@ -59,7 +62,6 @@
                     },
                     error: function (error) {
                         console.log(error.responseText);
-                        //alert(error.responseText);
                     }
                 });
             });
@@ -78,16 +80,6 @@
             <asp:Button ID="btnGetGeoLocations" runat="server" Text="GetGeoLocations" OnClientClick="return test();" OnClick="btnGetGeoLocations_Click" />
             <asp:Button ID="btnTest" runat="server" Text="test" OnClick="btnTest_Click" />
             <br />
-            <%--  <asp:Repeater ID="rptTest" runat="server">
-                <ItemTemplate>
-                    <asp:Label ID="lblName" runat="server" Text='<%# Eval("Name").ToString() %>'></asp:Label>
-                    <asp:Label ID="lblAdvertId" runat="server" Text='<%# Eval("AdvertId").ToString() %>'></asp:Label>
-                    <asp:Label ID="lblGeoLocationId" runat="server" Text='<%# Eval("GeoLocationId").ToString() %>'></asp:Label>
-                    <asp:Label ID="lblZoomLevel" runat="server" Text='<%# Eval("ZoomLevel").ToString() %>'></asp:Label>
-                    <asp:Label ID="lblLatitude" runat="server" Text='<%# Eval("Latitude").ToString() %>'></asp:Label>
-                    <asp:Label ID="lblLongitude" runat="server" Text='<%# Eval("Longitude").ToString() %>'></asp:Label>
-                </ItemTemplate>
-            </asp:Repeater>--%>
         </div>
     </form>
 </body>
